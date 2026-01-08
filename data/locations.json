@@ -1,0 +1,12 @@
+{
+  "library": {
+    "steps": 120,
+    "landmarks": ["office", "canteen"],
+    "obstacles": ["stairs"]
+  },
+  "exam hall": {
+    "steps": 180,
+    "landmarks": ["block A"],
+    "obstacles": []
+  }
+}
