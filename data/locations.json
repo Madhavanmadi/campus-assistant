@@ -4,9 +4,14 @@
     "landmarks": ["office", "canteen"],
     "obstacles": ["stairs"]
   },
-  "exam hall": {
-    "steps": 180,
-    "landmarks": ["block A"],
+  "principal room": {
+    "steps": 90,
+    "landmarks": ["administration block"],
+    "obstacles": []
+  },
+  "canteen": {
+    "steps": 80,
+    "landmarks": ["block B"],
     "obstacles": []
   }
 }
