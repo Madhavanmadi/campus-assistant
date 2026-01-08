@@ -1,0 +1,74 @@
+{
+  "ps block": [
+    {
+      "name": "Campus Gate",
+      "lat": 10.81368,
+      "lng": 78.67305,
+      "steps": 20,
+      "instruction": "Move straight to reach security desk"
+    },
+    {
+      "name": "Security Desk",
+      "steps": 40,
+      "instruction": "Go straight to two wheeler parking"
+    },
+    {
+      "name": "Two Wheeler Parking",
+      "steps": 90,
+      "instruction": "Go straight to Principal and Admin block"
+    },
+    {
+      "name": "Admin Block",
+      "steps": 80,
+      "instruction": "Go straight",
+      "alert": "Speed breaker ahead. Walk slow and steady. Total steps on speed breaker is four"
+    },
+    {
+      "name": "CS Block Front",
+      "info": "If you cross in front of CS block, no need to cross the road"
+    },
+    {
+      "name": "Turn Left Point",
+      "steps": 70,
+      "instruction": "Turn left and go straight to notice board"
+    },
+    {
+      "name": "Notice Board End",
+      "steps": 10,
+      "instruction": "Move forward to arts block starting point"
+    },
+    {
+      "name": "Arts Block Start",
+      "steps": 90,
+      "instruction": "Go straight to arts block left gate"
+    },
+    {
+      "name": "Arts Block Left Gate",
+      "steps": 80,
+      "instruction": "Move forward to stone bench near canteen"
+    },
+    {
+      "name": "Stone Bench Canteen",
+      "steps": 70,
+      "instruction": "Go straight to PS block entrance"
+    },
+    {
+      "name": "PS Block Entrance",
+      "instruction": "Take left",
+      "alert": "Slope ahead. Walk slow and steady"
+    },
+    {
+      "name": "PS Block Gate",
+      "steps": 30,
+      "instruction": "Move forward to lift"
+    },
+    {
+      "name": "Lift",
+      "instruction": "Enter the lift. Press first floor button on your right side"
+    },
+    {
+      "name": "PS Block",
+      "instruction": "You have successfully reached PS block"
+    }
+  ]
+}

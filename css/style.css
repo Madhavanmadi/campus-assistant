@@ -1,58 +1,106 @@
+/* ===============================
+   Global Reset & Base
+================================ */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  background-color: #000;
-  color: #fff;
-  font-family: Arial, sans-serif;
-}
-
-.container {
   min-height: 100vh;
-  padding: 24px;
+  background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+  color: #ffffff;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  cursor: pointer;
 }
 
-.title {
+/* ===============================
+   App Layout
+================================ */
+.app-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+}
+
+/* ===============================
+   Header
+================================ */
+.app-header h1 {
   font-size: 28px;
   margin-bottom: 8px;
 }
 
 .subtitle {
-  font-size: 16px;
-  opacity: 0.8;
-  margin-bottom: 24px;
+  font-size: 14px;
+  color: #bbbbbb;
 }
 
-.status {
+/* ===============================
+   Status Card
+================================ */
+.status-card {
+  margin: 32px 0;
+  padding: 24px;
+  border-radius: 16px;
+  background: #121212;
+  box-shadow: 0 0 20px rgba(0, 255, 200, 0.15);
+}
+
+.mic-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+#status {
   font-size: 20px;
-  margin: 20px 0;
-  padding: 16px;
-  border: 2px solid #fff;
-  border-radius: 8px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
-.start-btn {
-  font-size: 22px;
-  padding: 16px 24px;
+/* ===============================
+   Info Panel
+================================ */
+.info-panel {
   margin-top: 20px;
-  background: #fff;
-  color: #000;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
+  padding: 16px;
+  border-radius: 12px;
+  background: #1f1f1f;
+  font-size: 14px;
+  color: #dddddd;
+  line-height: 1.6;
 }
 
-.start-btn:focus {
-  outline: 4px solid yellow;
+/* ===============================
+   Footer
+================================ */
+.app-footer {
+  margin-top: 32px;
+  font-size: 12px;
+  color: #888888;
 }
 
-.map {
-  margin-top: 30px;
-  width: 100%;
-  max-width: 600px;
-  border-radius: 10px;
-  opacity: 0.6; /* visual only */
+/* ===============================
+   Accessibility Enhancements
+================================ */
+:focus {
+  outline: 3px solid #00ffd5;
+}
+
+/* ===============================
+   Responsive
+================================ */
+@media (max-width: 360px) {
+  .app-header h1 {
+    font-size: 24px;
+  }
+
+  #status {
+    font-size: 18px;
+  }
 }
