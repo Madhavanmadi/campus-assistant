@@ -63,7 +63,7 @@ function handleResult(event) {
 
   // STEP 1: Ask destination
   if (stage === "ask") {
-    spokenDestination = text;
+    spokenDestination = text.toLowerCase().trim();
     speak(
       `You are saying ${spokenDestination}. Say OK to continue or NO to repeat.`
     );

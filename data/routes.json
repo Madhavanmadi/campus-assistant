@@ -9,17 +9,23 @@
     },
     {
       "name": "Security Desk",
+      "lat": 10.81443,
+      "lng": 78.6728,
       "steps": 40,
       "instruction": "Go straight to two wheeler parking"
     },
     {
       "name": "Two Wheeler Parking",
-      "steps": 90,
+      "lat": 10.81439,
+      "lng": 78.67301,
+      "steps": 80,
       "instruction": "Go straight to Principal and Admin block"
     },
     {
       "name": "Admin Block",
-      "steps": 80,
+      "lat": 10.81445,
+      "lng": 78.67309,
+      "steps": 63,
       "instruction": "Go straight",
       "alert": "Speed breaker ahead. Walk slow and steady. Total steps on speed breaker is four"
     },
@@ -29,46 +35,59 @@
     },
     {
       "name": "Turn Left Point",
-      "steps": 70,
+      "steps": 20,
       "instruction": "Turn left and go straight to notice board"
     },
     {
       "name": "Notice Board End",
-      "steps": 10,
+      "steps": 90,
       "instruction": "Move forward to arts block starting point"
     },
     {
       "name": "Arts Block Start",
-      "steps": 90,
+      "steps": 8,
       "instruction": "Go straight to arts block left gate"
     },
     {
       "name": "Arts Block Left Gate",
-      "steps": 80,
+      "lat": 10.81469,
+      "lng": 78.67256,
+      "steps": 90,
       "instruction": "Move forward to stone bench near canteen"
     },
     {
       "name": "Stone Bench Canteen",
-      "steps": 70,
+      "lat": 10.81455,
+      "lng": 78.67315,
+      "steps": 95,
       "instruction": "Go straight to PS block entrance"
     },
     {
       "name": "PS Block Entrance",
+      "lat": 10.81502,
+      "lng": 78.67327,
+      "steps": 50,
       "instruction": "Take left",
-      "alert": "Slope ahead. Walk slow and steady"
+      "alert": "Slope ahead. Walk slow and steady,there is 40 steps here"
     },
     {
       "name": "PS Block Gate",
-      "steps": 30,
+      "lat": 10.8151,
+      "lng": 78.67327,
+      "steps": 8,
       "instruction": "Move forward to lift"
     },
     {
       "name": "Lift",
+      "lat": 10.81502,
+      "lng": 78.67327,
       "instruction": "Enter the lift. Press first floor button on your right side"
     },
     {
       "name": "PS Block",
-      "instruction": "You have successfully reached PS block"
+      "lat": 10.81502,
+      "lng": 78.67306,
+      "instruction": "You have successfully reached PS block !st floor"
     }
   ]
 }
