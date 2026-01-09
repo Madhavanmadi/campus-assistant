@@ -28,66 +28,7 @@
       "steps": 63,
       "instruction": "Go straight",
       "alert": "Speed breaker ahead. Walk slow and steady. Total steps on speed breaker is four"
-    },
-    {
-      "name": "CS Block Front",
-      "info": "If you cross in front of CS block, no need to cross the road"
-    },
-    {
-      "name": "Turn Left Point",
-      "steps": 20,
-      "instruction": "Turn left and go straight to notice board"
-    },
-    {
-      "name": "Notice Board End",
-      "steps": 90,
-      "instruction": "Move forward to arts block starting point"
-    },
-    {
-      "name": "Arts Block Start",
-      "steps": 8,
-      "instruction": "Go straight to arts block left gate"
-    },
-    {
-      "name": "Arts Block Left Gate",
-      "lat": 10.81469,
-      "lng": 78.67256,
-      "steps": 90,
-      "instruction": "Move forward to stone bench near canteen"
-    },
-    {
-      "name": "Stone Bench Canteen",
-      "lat": 10.81455,
-      "lng": 78.67315,
-      "steps": 95,
-      "instruction": "Go straight to PS block entrance"
-    },
-    {
-      "name": "PS Block Entrance",
-      "lat": 10.81502,
-      "lng": 78.67327,
-      "steps": 50,
-      "instruction": "Take left",
-      "alert": "Slope ahead. Walk slow and steady,there is 40 steps here"
-    },
-    {
-      "name": "PS Block Gate",
-      "lat": 10.8151,
-      "lng": 78.67327,
-      "steps": 8,
-      "instruction": "Move forward to lift"
-    },
-    {
-      "name": "Lift",
-      "lat": 10.81502,
-      "lng": 78.67327,
-      "instruction": "Enter the lift. Press first floor button on your right side"
-    },
-    {
-      "name": "PS Block",
-      "lat": 10.81502,
-      "lng": 78.67306,
-      "instruction": "You have successfully reached PS block !st floor"
     }
+    
   ]
 }
