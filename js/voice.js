@@ -5,18 +5,25 @@
 let stage = "idle";   // idle → ask → confirm → navigate
 let spokenDestination = "";
 let recognition = null;
+let isListening = false;
 
 // DOM
 const bodyEl = document.getElementById("appBody");
 const statusEl = document.getElementById("status");
 
-// 🔊 Speak helper
-function speak(text) {
+// 🔊 Speak helper (IMPORTANT: callback after speech ends)
+function speak(text, onEnd) {
   window.speechSynthesis.cancel();
+
   const msg = new SpeechSynthesisUtterance(text);
   msg.lang = "en-IN";
   msg.rate = 1;
   msg.pitch = 1;
+
+  msg.onend = () => {
+    if (onEnd) onEnd();
+  };
+
   window.speechSynthesis.speak(msg);
 }
 
@@ -25,12 +32,13 @@ function updateStatus(text) {
   if (statusEl) statusEl.innerText = text;
 }
 
-// 🎤 Start mic
+// 🎤 Start mic safely
 function startRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (isListening) return;
 
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
-    speak("Voice recognition not supported on this device");
+    speak("Voice recognition not supported");
     return;
   }
 
@@ -39,21 +47,26 @@ function startRecognition() {
   recognition.interimResults = false;
   recognition.continuous = false;
 
-  updateStatus("Listening...");
-  recognition.start();
+  recognition.onstart = () => {
+    isListening = true;
+    updateStatus("Mic ON. Speak now.");
+  };
 
   recognition.onresult = handleResult;
 
   recognition.onerror = () => {
-    updateStatus("Didn't catch that. Listening again.");
-    setTimeout(startRecognition, 1500);
+    isListening = false;
+    updateStatus("Didn't catch that.");
+    speak("Please say again", () => {
+      startRecognition();
+    });
   };
 
   recognition.onend = () => {
-    if (stage === "ask" || stage === "confirm") {
-      setTimeout(startRecognition, 1500);
-    }
+    isListening = false;
   };
+
+  recognition.start();
 }
 
 // 🎯 Handle speech
@@ -63,45 +76,46 @@ function handleResult(event) {
 
   // STEP 1: Ask destination
   if (stage === "ask") {
-    spokenDestination = text.toLowerCase().trim();
+    spokenDestination = text;
+
     speak(
-      `You are saying ${spokenDestination}. Say OK to continue or NO to repeat.`
+      `You said ${spokenDestination}. Say yes to confirm or no to repeat.`,
+      () => {
+        stage = "confirm";
+        startRecognition();
+      }
     );
-    stage = "confirm";
     return;
   }
 
   // STEP 2: Confirm
   if (stage === "confirm") {
-    if (text.includes("ok") || text.includes("yes")) {
-      speak("Starting navigation.");
-      stage = "navigate";
-      handleDestination(spokenDestination); // app.js
+    if (text.includes("yes") || text.includes("ok")) {
+      speak("Starting navigation.", () => {
+        stage = "navigate";
+        handleDestination(spokenDestination); // app.js
+      });
     } else {
-      speak("Please say your destination again.");
-      stage = "ask";
-      setTimeout(startRecognition, 1500);
+      speak("Please say your destination again.", () => {
+        stage = "ask";
+        startRecognition();
+      });
     }
   }
 }
 
-// 🚀 MAIN START — ANYWHERE USER TAPS
+// 🚀 MAIN START — USER TAP REQUIRED
 bodyEl.addEventListener("click", () => {
-
-  // Prevent re-trigger
   if (stage !== "idle") return;
 
   stage = "welcome";
   updateStatus("Welcome");
 
-  // 🔊 Welcome
-  speak("Welcome to Bishop Heber College.");
-
-  // 🔊 Ask destination
-  setTimeout(() => {
-    speak("Where are you going?");
-    stage = "ask";
-    updateStatus("Listening for destination...");
-    startRecognition();
-  }, 2000);
+  speak("Welcome to Bishop Heber College.", () => {
+    speak("Where are you going?", () => {
+      stage = "ask";
+      updateStatus("Listening for destination...");
+      startRecognition();
+    });
+  });
 });
