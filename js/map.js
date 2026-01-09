@@ -1,2 +1,2 @@
 // Day 1: only display map
-console.log("Campus map loaded");
+console.log("College logo loaded");

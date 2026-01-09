@@ -3,31 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <title>Smart Campus Assistant</title>
+
+  <!-- Mobile & Accessibility -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#E8F5F2">
+  <meta name="description" content="Voice-based campus navigation for visually impaired users">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<!-- 👇 IMPORTANT: id is REQUIRED -->
+<body id="appBody">
 
-  <main class="app-container">
+  <main class="app-container" role="main">
 
     <header class="app-header">
       <h1>Smart Campus Assistant</h1>
-      <p class="subtitle">Voice-based navigation for visually impaired users</p>
+      <p class="subtitle">
+        Voice-based navigation for visually impaired users
+      </p>
     </header>
 
-    <!-- 🎤 Speak Button -->
-    <section class="mic-section">
-      <button id="speakBtn" aria-label="Speak to the app">🎤 Speak</button>
-      <p id="status">Tap Speak and talk</p>
+    <!-- 🎤 Instruction Area -->
+    <section class="mic-section" aria-live="polite">
+      <p id="status">
+        Tap anywhere on the screen to start
+      </p>
     </section>
 
     <section class="info-panel">
       <p>
-        🔊 Audio-first navigation<br>
-        📍 No installation required<br>
-        ♿ Accessibility focused
+        🔊 Audio-first navigation<br><br><br>
+        📍 No installation required<br><br><br>
+        ♿ Designed for blind users
       </p>
     </section>
 
@@ -37,7 +46,7 @@
 
   </main>
 
-  <!-- Scripts -->
+  <!-- Scripts (ORDER IMPORTANT) -->
   <script src="js/micVisual.js"></script>
   <script src="js/voice.js"></script>
   <script src="js/app.js"></script>
