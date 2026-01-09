@@ -1,22 +1,32 @@
 // ===============================
-// APP LOGIC + GPS-ONLY NAVIGATION
+// Smart Campus Assistant - app.js (OLD + NEW COMBINED)
 // ===============================
 
 let routesData = {};
 let watchId = null;
 
-/* ---------- LOAD ROUTES ---------- */
-fetch("data/routes.json")
-  .then(res => res.json())
-  .then(data => {
-    routesData = data;
-    console.log("Routes loaded", routesData);
-  })
-  .catch(() => {
-    speak("Unable to load route data");
-  });
+// 🔹 NEW STATE VARIABLES
+let currentRoute = [];
+let currentStepIndex = 0;
+let navigationActive = false;
 
-/* ---------- NORMALIZE SPEECH ---------- */
+/* ---------- LOAD ROUTES ---------- */
+async function loadRoutes() {
+  console.log("========== LOAD ROUTES ==========");
+
+  try {
+    const res = await fetch("routes.json");
+    const data = await res.json();
+
+    routesData = data.navigation || {};
+    console.log("[APP] Routes loaded:", Object.keys(routesData));
+  } catch (err) {
+    console.error("[APP] Route load failed:", err);
+    speak("Unable to load routes");
+  }
+}
+
+/* ---------- NORMALIZE ---------- */
 function normalize(text) {
   return text
     .toLowerCase()
@@ -25,139 +35,127 @@ function normalize(text) {
     .trim();
 }
 
-/* ---------- GET CURRENT USER LOCATION ---------- */
-function getCurrentLocation(callback) {
-  if (!navigator.geolocation) {
-    speak("GPS not supported on this device");
-    return;
-  }
+/* ---------- DESTINATION ALIASES (OLD – KEPT) ---------- */
+const destinationAliases = {
+  principal_room: [
+    "principal",
+    "principal room",
+    "principal office",
+    "principal sir room",
+    "admin room"
+  ],
+  stage: ["stage"]
+};
 
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
+/* ---------- HANDLE DESTINATION (UPDATED) ---------- */
+async function handleDestination(text) {
+  console.log("========== HANDLE DESTINATION ==========");
+  console.log("[VOICE] Input:", text);
 
-      console.log("Current Latitude:", lat);
-      console.log("Current Longitude:", lng);
+  await loadRoutes();
 
-      if (callback) callback(lat, lng);
-    },
-    () => {
-      speak("Unable to get your current location");
-    },
-    { enableHighAccuracy: true }
-  );
-}
-
-/* ---------- HANDLE DESTINATION ---------- */
-/* Called from voice.js */
-function handleDestination(spokenText) {
-  const spoken = normalize(spokenText);
+  const spoken = normalize(text);
   let matchedKey = null;
 
-  // 🔍 Match using aliases inside routes.json
-  for (const key in routesData) {
-    const aliases = routesData[key].aliases || [];
-    if (aliases.some(a => normalize(a) === spoken)) {
+  // 🔍 OLD SEARCH LOGIC (KEPT)
+  for (let key in destinationAliases) {
+    if (
+      destinationAliases[key].some(a =>
+        spoken.includes(normalize(a))
+      )
+    ) {
       matchedKey = key;
       break;
     }
   }
 
   if (!matchedKey) {
-    speak("Destination not found. Please say again.");
+    speak("Destination not detected");
     return;
   }
 
-  const route = routesData[matchedKey].route;
-
-  if (!route || route.length === 0) {
-    speak("No route data available.");
+  const routeObj = routesData[matchedKey];
+  if (!routeObj || !routeObj.route) {
+    speak("Route data missing");
     return;
   }
 
-  speak(`Navigating to ${matchedKey}`);
+  // 🔹 NEW NAVIGATION INIT
+  currentRoute = routeObj.route;
+  currentStepIndex = 0;
+  navigationActive = true;
 
-  // 🔑 First get current location, then start navigation
-  getCurrentLocation(() => {
-    startGpsNavigation(route);
-  });
+  speak(`Navigating to ${matchedKey.replace("_", " ")}`);
+
+  // Speak ONLY FIRST STEP
+  speakCurrentStep();
+
+  startStepTracking();
 }
 
-/* ======================================================
-   GPS-ONLY NAVIGATION (LATITUDE & LONGITUDE BASED)
-   ====================================================== */
+/* ---------- SPEAK CURRENT STEP ---------- */
+function speakCurrentStep() {
+  if (!currentRoute[currentStepIndex]) return;
 
-function startGpsNavigation(route) {
-  let index = 0;
+  const step = currentRoute[currentStepIndex];
 
-  if (!navigator.geolocation) {
-    speak("GPS not supported on this device");
-    return;
+  // 🖥 Update UI
+  const el = document.getElementById("currentStepName");
+  if (el) el.innerText = step.name;
+
+  let message = step.instruction || "";
+  if (step.steps) {
+    message += ` Walk ${step.steps} steps.`;
   }
+
+  console.log("[VOICE] Speaking step:", step.name);
+  speak(message);
+}
+
+/* ---------- STEP-BY-STEP GPS TRACKING ---------- */
+function startStepTracking() {
+  if (!navigationActive) return;
 
   watchId = navigator.geolocation.watchPosition(
     pos => {
-      const userLat = pos.coords.latitude;
-      const userLng = pos.coords.longitude;
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
 
-      const target = route[index];
+      // 🖥 Live GPS on screen
+      const latEl = document.getElementById("lat");
+      const lngEl = document.getElementById("lng");
+      if (latEl) latEl.innerText = lat.toFixed(6);
+      if (lngEl) lngEl.innerText = lng.toFixed(6);
 
-      const dist = getDistance(
-        userLat,
-        userLng,
-        target.lat,
-        target.lng
-      );
+      const step = currentRoute[currentStepIndex];
+      if (!step) return;
 
-      // 🎯 Checkpoint reached
-      if (dist < 8) {
-        speak(`Reached ${target.name}`);
-        index++;
+      const d = distance(lat, lng, step.lat, step.lng);
+      console.log(`[GPS] Distance to ${step.name}: ${d} meters`);
 
-        if (index >= route.length) {
+      // ✅ Step reached
+      if (d < 15) {
+        currentStepIndex++;
+
+        // Next step exists
+        if (currentStepIndex < currentRoute.length) {
+          speakCurrentStep();
+        }
+        // Final destination
+        else {
           speak("You have reached your destination");
           navigator.geolocation.clearWatch(watchId);
+          navigationActive = false;
         }
-        return;
       }
-
-      // 🧭 Direction guidance (LAT/LNG ONLY)
-      giveDirection(
-        userLat,
-        userLng,
-        target.lat,
-        target.lng,
-        dist
-      );
     },
-    () => speak("Unable to access GPS location"),
-    {
-      enableHighAccuracy: true,
-      maximumAge: 1000,
-      timeout: 5000
-    }
+    err => console.error("[GPS] Error:", err),
+    { enableHighAccuracy: true }
   );
 }
 
-/* ---------- DIRECTION LOGIC (LAT/LNG ONLY) ---------- */
-function giveDirection(lat1, lng1, lat2, lng2, distance) {
-  const dLat = lat2 - lat1;
-  const dLng = lng2 - lng1;
-
-  let direction = "";
-
-  if (Math.abs(dLat) > Math.abs(dLng)) {
-    direction = dLat > 0 ? "Move forward" : "Move backward";
-  } else {
-    direction = dLng > 0 ? "Turn right" : "Turn left";
-  }
-
-  speak(`${direction}. Distance ${Math.round(distance)} meters`);
-}
-
-/* ---------- DISTANCE (HAVERSINE FORMULA) ---------- */
-function getDistance(lat1, lon1, lat2, lon2) {
+/* ---------- DISTANCE ---------- */
+function distance(lat1, lon1, lat2, lon2) {
   const R = 6371e3;
   const toRad = x => x * Math.PI / 180;
 
@@ -172,3 +170,4 @@ function getDistance(lat1, lon1, lat2, lon2) {
 
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
+

@@ -1,42 +1,63 @@
 {
-  "principal": {
-    "aliases": [
-      "principal room",
-      "principal office",
-      "principal sir room",
-      "principal cabin",
-      "admin principal room"
-    ],
-    "route": [
-      {
-        "name": "Campus Gate",
-        "lat": 10.81368,
-        "lng": 78.67305,
-        "steps": 20,
-        "instruction": "Move straight to reach security desk"
-      },
-      {
-        "name": "Security Desk",
-        "lat": 10.81443,
-        "lng": 78.6728,
-        "steps": 40,
-        "instruction": "Go straight to two wheeler parking"
-      },
-      {
-        "name": "Two Wheeler Parking",
-        "lat": 10.81439,
-        "lng": 78.67301,
-        "steps": 80,
-        "instruction": "Go straight to Principal and Admin block"
-      },
-      {
-        "name": "Admin Block",
-        "lat": 10.81445,
-        "lng": 78.67309,
-        "steps": 63,
-        "instruction": "Go straight",
-        "alert": "Speed breaker ahead. Walk slow and steady. Total steps on speed breaker is four"
-      }
-    ]
+  "navigation": {
+    "principal_room": {
+      "start_point": "Campus Gate",
+      "aliases": [
+        "principal",
+        "principal office",
+        "principal sir room",
+        "principal cabin",
+        "admin principal room"
+      ],
+      "route": [
+        {
+          "name": "Campus Gate",
+          "lat": 10.81368,
+          "lng": 78.67305,
+          "steps": 20,
+          "instruction": "Move straight to reach the security desk"
+        },
+        {
+          "name": "Security Desk",
+          "lat": 10.81443,
+          "lng": 78.6728,
+          "steps": 40,
+          "instruction": "Go straight to the two wheeler parking"
+        },
+        {
+          "name": "Two Wheeler Parking",
+          "lat": 10.81439,
+          "lng": 78.67301,
+          "steps": 80,
+          "instruction": "Go straight towards the Admin Block"
+        },
+        {
+          "name": "Admin Block",
+          "lat": 10.81445,
+          "lng": 78.67309,
+          "steps": 63,
+          "instruction": "Go straight to reach the Principal Room",
+          "alert": "Speed breaker ahead. Walk slow and steady (4 steps)"
+        }
+      ]
+    },
+
+    "stage": {
+      "start_point": "Table",
+      "aliases": [
+        "stage",
+        "ps stage"
+      ],
+      "route": [
+        {
+          "name": "Table",
+          "lat": 10.818,
+          "lng": 78.686,
+          "steps": 40,
+          "instruction": "Move 40 steps forward to reach the stage"
+        }
+      ]
+    }
   }
 }
+

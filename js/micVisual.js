@@ -13,10 +13,16 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
   source.connect(analyser);
 
   detectVoice();
+}).catch(() => {
+  console.log("Microphone permission denied");
 });
 
 function detectVoice() {
   requestAnimationFrame(detectVoice);
+
+  // ✅ SAFETY CHECKS (VERY IMPORTANT)
+  if (!analyser || !dataArray) return;
+  if (!speakBtn) return;
 
   analyser.getByteFrequencyData(dataArray);
   let sum = dataArray.reduce((a, b) => a + b, 0);
@@ -28,3 +34,4 @@ function detectVoice() {
     speakBtn.classList.remove("listening");
   }
 }
+

@@ -1,8 +1,8 @@
 // ===============================
-// Voice Controller (Blind Friendly)
+// Voice Controller (Blind Friendly) - DEBUG VERSION
 // ===============================
 
-let stage = "idle";   // idle → ask → confirm → navigate
+let stage = "idle";   // idle → welcome → ask → confirm → navigate
 let spokenDestination = "";
 let recognition = null;
 let isListening = false;
@@ -11,8 +11,12 @@ let isListening = false;
 const bodyEl = document.getElementById("appBody");
 const statusEl = document.getElementById("status");
 
-// 🔊 Speak helper (callback after speech ends)
+console.log("[VOICE] voice.js loaded");
+
+/* ---------- SPEAK FUNCTION ---------- */
 function speak(text, onEnd) {
+  console.log("[VOICE] Speaking:", text);
+
   window.speechSynthesis.cancel();
 
   const msg = new SpeechSynthesisUtterance(text);
@@ -21,23 +25,31 @@ function speak(text, onEnd) {
   msg.pitch = 1;
 
   msg.onend = () => {
+    console.log("[VOICE] Speech finished:", text);
     if (onEnd) onEnd();
   };
 
   window.speechSynthesis.speak(msg);
 }
 
-// 🖥️ Update status
+/* ---------- UPDATE STATUS ---------- */
 function updateStatus(text) {
+  console.log("[VOICE] Status update:", text);
   if (statusEl) statusEl.innerText = text;
 }
 
-// 🎤 Start mic safely
+/* ---------- START SPEECH RECOGNITION ---------- */
 function startRecognition() {
-  if (isListening) return;
+  console.log("[VOICE] startRecognition() called");
+
+  if (isListening) {
+    console.log("[VOICE] Mic already listening");
+    return;
+  }
 
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
+    console.error("[VOICE] SpeechRecognition not supported");
     speak("Voice recognition not supported");
     return;
   }
@@ -49,76 +61,97 @@ function startRecognition() {
 
   recognition.onstart = () => {
     isListening = true;
+    console.log("[VOICE] Mic started");
     updateStatus("Mic ON. Speak now.");
   };
 
   recognition.onresult = handleResult;
 
-  recognition.onerror = () => {
+  recognition.onerror = err => {
+    console.error("[VOICE] Recognition error:", err);
     isListening = false;
-    updateStatus("Didn't catch that. Please speak again.");
+    updateStatus("Didn't catch that.");
+    speak("Please say again", () => {
+      startRecognition();
+    });
   };
 
   recognition.onend = () => {
+    console.log("[VOICE] Mic stopped");
     isListening = false;
   };
 
   recognition.start();
 }
 
-// 🎯 Handle speech
+/* ---------- HANDLE VOICE RESULT ---------- */
 function handleResult(event) {
   const text = event.results[0][0].transcript.toLowerCase().trim();
+
+  console.log("[VOICE] Recognized text:", text);
+  console.log("[VOICE] Current stage:", stage);
+
   updateStatus("You said: " + text);
 
-  /* ---------- ASK STAGE ---------- */
+  /* ---------- STAGE: ASK DESTINATION ---------- */
   if (stage === "ask") {
     spokenDestination = text;
+    console.log("[VOICE] Destination captured:", spokenDestination);
 
     speak(
       `You said ${spokenDestination}. Say yes to confirm or no to repeat.`,
       () => {
         stage = "confirm";
-        setTimeout(startRecognition, 1000); // 🔑 silence gap
+        console.log("[VOICE] Stage changed to CONFIRM");
+        startRecognition();
       }
     );
-
-    return; // ✅ VERY IMPORTANT
+    return;
   }
 
-  /* ---------- CONFIRM STAGE ---------- */
+  /* ---------- STAGE: CONFIRM ---------- */
   if (stage === "confirm") {
-    if (
-      text === "yes" ||
-      text === "ok" ||
-      text.includes("yes") ||
-      text.includes("okay")
-    ) {
+    if (text.includes("yes") || text.includes("ok")) {
+      console.log("[VOICE] User confirmed destination:", spokenDestination);
+
       speak("Starting navigation.", () => {
         stage = "navigate";
+        console.log("[VOICE] Stage changed to NAVIGATE");
+        console.log("[VOICE] Calling handleDestination()");
         handleDestination(spokenDestination); // app.js
       });
     } else {
+      console.log("[VOICE] User rejected destination");
+
       speak("Please say your destination again.", () => {
         stage = "ask";
-        setTimeout(startRecognition, 1000);
+        console.log("[VOICE] Stage changed back to ASK");
+        startRecognition();
       });
     }
   }
 }
 
-// 🚀 MAIN START — USER TAP REQUIRED
+/* ---------- MAIN START (USER TAP) ---------- */
 bodyEl.addEventListener("click", () => {
-  if (stage !== "idle") return;
+  console.log("[VOICE] Screen tapped");
+
+  if (stage !== "idle") {
+    console.log("[VOICE] App already started");
+    return;
+  }
 
   stage = "welcome";
+  console.log("[VOICE] Stage changed to WELCOME");
   updateStatus("Welcome");
 
   speak("Welcome to Bishop Heber College.", () => {
     speak("Where are you going?", () => {
       stage = "ask";
+      console.log("[VOICE] Stage changed to ASK");
       updateStatus("Listening for destination...");
       startRecognition();
     });
   });
 });
+
