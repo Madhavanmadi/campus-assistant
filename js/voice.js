@@ -11,7 +11,7 @@ let isListening = false;
 const bodyEl = document.getElementById("appBody");
 const statusEl = document.getElementById("status");
 
-// 🔊 Speak helper (IMPORTANT: callback after speech ends)
+// 🔊 Speak helper (callback after speech ends)
 function speak(text, onEnd) {
   window.speechSynthesis.cancel();
 
@@ -56,10 +56,7 @@ function startRecognition() {
 
   recognition.onerror = () => {
     isListening = false;
-    updateStatus("Didn't catch that.");
-    speak("Please say again", () => {
-      startRecognition();
-    });
+    updateStatus("Didn't catch that. Please speak again.");
   };
 
   recognition.onend = () => {
@@ -74,7 +71,7 @@ function handleResult(event) {
   const text = event.results[0][0].transcript.toLowerCase().trim();
   updateStatus("You said: " + text);
 
-  // STEP 1: Ask destination
+  /* ---------- ASK STAGE ---------- */
   if (stage === "ask") {
     spokenDestination = text;
 
@@ -82,15 +79,21 @@ function handleResult(event) {
       `You said ${spokenDestination}. Say yes to confirm or no to repeat.`,
       () => {
         stage = "confirm";
-        startRecognition();
+        setTimeout(startRecognition, 1000); // 🔑 silence gap
       }
     );
-    return;
+
+    return; // ✅ VERY IMPORTANT
   }
 
-  // STEP 2: Confirm
+  /* ---------- CONFIRM STAGE ---------- */
   if (stage === "confirm") {
-    if (text.includes("yes") || text.includes("ok")) {
+    if (
+      text === "yes" ||
+      text === "ok" ||
+      text.includes("yes") ||
+      text.includes("okay")
+    ) {
       speak("Starting navigation.", () => {
         stage = "navigate";
         handleDestination(spokenDestination); // app.js
@@ -98,7 +101,7 @@ function handleResult(event) {
     } else {
       speak("Please say your destination again.", () => {
         stage = "ask";
-        startRecognition();
+        setTimeout(startRecognition, 1000);
       });
     }
   }
